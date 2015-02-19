@@ -9,6 +9,7 @@
 #ifndef DataStructures_LinkedList_h
 #define DataStructures_LinkedList_h
 
+#include <memory>
 
 template <class T>
 class LinkedList{
@@ -33,18 +34,14 @@ public:
         
     private:
         std::shared_ptr<Node> current;
-        
+		std::shared_ptr<Node> head;
+		std::shared_ptr<Node> tail;
         
     public:
-        Iterator(): current(nullptr){
-            
-        }
-        
+        Iterator(): current(nullptr){}
     };
     
-    LinkedList(){
-        
-    }
+    LinkedList(){}
     
     //Inserts an item to the position
     Iterator insert(Iterator iterator, const T& value){
@@ -56,10 +53,14 @@ public:
         return Iterator();
     }
     
-    Iterator push_back(const T& value){
-        return insert(Iterator(), value);
-    }
+	Iterator push_back(const T& value);
 };
 
+
+//Implementation
+template <class T>
+LinkedList::Iterator LinkedList::push_back() {
+	return insert(Iterator(), value);
+}
 
 #endif

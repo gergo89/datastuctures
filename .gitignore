@@ -1,0 +1,8 @@
+*.opensdf
+*.tlog
+*.exe
+*.ilk
+*.pdb
+*.obj
+*.log
+*.filters
