@@ -40,7 +40,7 @@ public:
 		T& operator*();*/
 	};
 
-	LinkedList(){}
+    LinkedList();
 
 	//Inserts an item to the position
 	void insert(Iterator iterator, const T& value);
@@ -62,19 +62,26 @@ void LinkedList<T>::insert(Iterator iterator, const T& value){
 	std::shared_ptr<Node> newItem;
 
 	if (iterator.current == nullptr){
-		newItem = std::make_shared<Node>(head, tail, value);
+		newItem = std::make_shared<Node>(nullptr, tail, value);
 	}	
 
-	if (!head){
-		head = newItem;
-		
-		head->before = head;
-		head->after = head;
+	if (!head->after){ //if this is the first item we inserted
+		head->after = newItem;
+        newItem->before = head;
+        
+        tail->before = newItem;
 	}
-	else {
-		tail->after = newItem;
-		tail = newItem;
-	}
+   
+    
+    
+    newItem->after = tail;
+}
+
+template<class T>
+LinkedList<T>::LinkedList(){
+    tail = std::make_shared<Node>(nullptr, nullptr, 0);
+    head = std::make_shared<Node>(nullptr, nullptr, 0);
+    
 }
 
 #endif
