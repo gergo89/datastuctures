@@ -25,7 +25,7 @@ private:
 
 	std::shared_ptr<Node> head;
 	std::shared_ptr<Node> tail;
-    int size;
+    int _size;
 public:
 	class Iterator{
 		friend class LinkedList;
@@ -40,20 +40,28 @@ public:
         
 		Iterator& operator++();
         Iterator operator++(int);
-/*		Iterator& operator--();
+		Iterator& operator--();
+        Iterator operator--(int);
 
-		T& operator*();*/
+		T& operator*();
 	};
 
     LinkedList();
 
 	//Inserts an item to the position
-	void insert(Iterator iterator, const T& value);
-	void push_back(const T& value);
+	Iterator insert(Iterator iterator, const T& value);
+	Iterator push_back(const T& value);
+    Iterator push_front(const T& value);
+    
+    Iterator remove(Iterator iterator, const T& value);
+    Iterator delete_back(const T& value);
+    Iterator delete_front(const T& value);
     
     Iterator first() const;
     Iterator last() const;
     Iterator end() const;
+    
+    int size() const;
     
     void print() const;
 };
@@ -90,48 +98,69 @@ typename LinkedList<T>::Iterator LinkedList<T>::Iterator::operator++(int){
     return _current;
 }
 
-
 template <class T>
-void LinkedList<T>::push_back(const T& value) {
-    
-    auto newNode = std::make_shared<Node>(tail, nullptr, value);
-    
-    if(size == 0){
-        head = newNode;
-    } else{
-        tail->after = newNode;
+typename LinkedList<T>::Iterator& LinkedList<T>::Iterator::operator--(){
+    if(!current){
+        throw "Invalid operator";
     }
     
-    tail = newNode;
-    size++;
+    current = current->before;
+    return *this;
+}
+
+template <class T>
+typename LinkedList<T>::Iterator LinkedList<T>::Iterator::operator--(int){
+    
+    if(!current){
+        throw "Invalid operator";
+    }
+    
+    auto _current = current;
+    _current = _current->before;
+    return _current;
+}
+
+template <class T>
+T& LinkedList<T>::Iterator::operator*(){
+    return current->value;
+}
+
+template <class T>
+typename LinkedList<T>::Iterator LinkedList<T>::push_back(const T& value) {
+    return insert(Iterator(), value);
 }
 
 //Inserts an item after the item pointed by the iterator
 //If the iterator doesnt point to any item then it is inserted as the last item
 template <class T>
-void LinkedList<T>::insert(Iterator iterator, const T& value){
+typename LinkedList<T>::Iterator LinkedList<T>::insert(Iterator iterator, const T& value){
 	
 	std::shared_ptr<Node> newItem;
-
+    
 	if (iterator.current == nullptr){
-		newItem = std::make_shared<Node>(nullptr, tail, value);
-	}	
-
-	if (!head){ //if this is the first item we inserted
-        head = std::make_shared<Node>(nullptr, newItem, 0);
-        head->after = newItem;
-        newItem->before = head;
-        
-        //tail->before = newItem;
-	}
-   
+		newItem = std::make_shared<Node>(nullptr, nullptr, value);
+    }else{
+        newItem = std::make_shared<Node>(iterator.current, iterator.current->after, value);
+    }
     
+    if(!head){ //if the list is empty
+        head = newItem;
+        tail = newItem;
+    }
+    else if(newItem->after == nullptr){ //if we insert it as the last item
+        tail->after = newItem;
+        tail = newItem;
+    }
+    else{ //if it is somewhere in the middle
+        newItem->before->after = newItem->after->before = newItem;
+    }
     
-    newItem->after = tail;
+    _size++;
+    return Iterator(newItem);
 }
 
 template<class T>
-LinkedList<T>::LinkedList(): tail(nullptr), head(nullptr), size(0){
+LinkedList<T>::LinkedList(): tail(nullptr), head(nullptr), _size(0){
 
 }
 
@@ -156,6 +185,11 @@ void LinkedList<T>::print() const{
     for (Iterator act = first(); act != end(); ++act) {
         std::cout << act.current->value << std::endl;
     }
+}
+
+template <class T>
+int LinkedList<T>::size() const{
+    return _size;
 }
 
 #endif
