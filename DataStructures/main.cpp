@@ -17,6 +17,9 @@ int main(int argc, const char * argv[]) {
     LinkedList<int> l;
     
     l.push_back(3);
+    l.push_back(5);
+    
+    l.print();
     
     return 0;
 }
